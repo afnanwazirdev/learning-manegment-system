@@ -1,0 +1,2 @@
+export default function Donut({value,label,sub}){const v=Math.max(0,Math.min(100,value||0)),R=52,C=2*Math.PI*R;
+return <div className="card donut"><svg viewBox="0 0 140 140" width="132" height="132" role="img" aria-label={label+' '+v+'%'}><circle cx="70" cy="70" r={R} className="dtrack"/><circle cx="70" cy="70" r={R} className="dval" strokeDasharray={C} strokeDashoffset={C*(1-v/100)} transform="rotate(-90 70 70)"/><text x="70" y="76" textAnchor="middle" className="dtxt">{v}%</text></svg><div><b>{label}</b><small>{sub}</small></div></div>}

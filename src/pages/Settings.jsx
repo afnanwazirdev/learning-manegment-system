@@ -1,0 +1,7 @@
+import {useState} from 'react';import {useApp} from '../context/AppContext';import Icon from '../components/common/Icon';
+export default function Settings(){const {settings,saveSettings,theme,setTheme,say,api}=useApp(),[err,setErr]=useState('');
+const save=async e=>{e.preventDefault();try{await saveSettings({school:e.target.school.value,accent:e.target.accent.value});setErr('');say('Settings saved')}catch(x){setErr(x.message)}};
+const exp=async()=>{try{const j=await api('/export'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(j,null,2)],{type:'application/json'}));a.download='lms-backup.json';a.click()}catch(x){say(x.message,'error')}};
+return <div className="grid2"><div className="card"><h3>School settings</h3><form noValidate onSubmit={save}><label>School name<input name="school" defaultValue={settings.school}/></label><label>Brand colour<input type="color" name="accent" defaultValue={settings.accent}/></label><span className="err">{err}</span><div className="acts"><button className="btn">Save changes</button></div></form></div>
+<div className="card"><h3>Appearance</h3><div className="seg">{['light','dark'].map(t=><button key={t} className={theme==t?'on Present':''} onClick={()=>setTheme(t)}>{t[0].toUpperCase()+t.slice(1)}</button>)}</div></div>
+<div className="card"><h3>Backup</h3><p className="mut">Download all school data (students, teachers, records and accounts without passwords) as a JSON file.</p><button className="btn ghost" onClick={exp}><Icon n="download" size={16}/>Download backup</button></div></div>}

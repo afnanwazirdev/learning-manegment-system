@@ -1,0 +1,6 @@
+import {useState,useLayoutEffect,useRef} from 'react';import gsap from 'gsap';import LoginForm from '../components/auth/LoginForm';import RegisterForm from '../components/auth/RegisterForm';import ServerStatus from '../components/auth/ServerStatus';import {useApp} from '../context/AppContext';import Icon from '../components/common/Icon';import {calm} from '../components/fx/motion';
+export default function AuthPage({role}){const {settings:cfg}=useApp(),[tab,setTab]=useState('in'),T=role[0].toUpperCase()+role.slice(1),r=useRef();
+useLayoutEffect(()=>{if(calm())return;const c=gsap.context(()=>{gsap.from('.auth',{y:60,opacity:0,rotationX:-18,transformPerspective:900,duration:.9,ease:'power3.out'})},r);return()=>c.revert()},[]);
+return <div className="login" ref={r}><div className={'card auth'+(tab=='up'?' wide':'')}><ServerStatus/><a href="#"><Icon n="back" size={14}/> All portals</a><span className="ico"><Icon n={role} size={24}/></span><h2>{T} portal</h2><p>{cfg.school}</p>
+<div className="tabs"><button className={tab=='in'?'on':''} onClick={()=>setTab('in')}>Sign in</button><button className={tab=='up'?'on':''} onClick={()=>setTab('up')}>Register</button></div>
+{tab=='in'?<LoginForm role={role} onRegister={()=>setTab('up')}/>:<RegisterForm role={role}/>}</div></div>}

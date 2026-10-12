@@ -1,0 +1,1 @@
+export default function Avatar({user,big}){return <span className={'av'+(big?' big':'')}>{user.avatar?<img src={user.avatar} alt={user.name}/>:user.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</span>}

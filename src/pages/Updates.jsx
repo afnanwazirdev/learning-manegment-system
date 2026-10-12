@@ -1,0 +1,5 @@
+import {useState,useEffect} from 'react';import {useApp} from '../context/AppContext';import Icon from '../components/common/Icon';import {ago} from '../utils';
+export default function Updates(){const {activity,user,seen,markSeen}=useApp(),[q,setQ]=useState(''),[s0]=useState(seen);useEffect(()=>{markSeen()},[]);
+const L=activity.filter(e=>(e.text+e.role).toLowerCase().includes(q.toLowerCase()));
+return <><div className="bar"><div className="sbox"><Icon n="search" size={16}/><input aria-label="Search updates" placeholder="Search updates" value={q} onChange={e=>setQ(e.target.value)}/></div></div>
+<div className="card">{L.length?L.map(e=><div className="li feed" key={e.id}><span className="fi"><Icon n={e.coll} size={16}/></span><div><b>{e.text}{e.ts>s0&&e.actor!==user.name&&<span className="tag good nw">New</span>}</b><small>{e.role} · {ago(e.ts)}</small></div></div>):<p className="empty">No updates found. New notices, assignments, grades and registrations will appear here.</p>}</div></>}

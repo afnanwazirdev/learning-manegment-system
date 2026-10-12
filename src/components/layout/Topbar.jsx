@@ -1,0 +1,11 @@
+import {useState,useEffect,useRef} from 'react';import {useApp} from '../../context/AppContext';import Avatar from '../common/Avatar';import Icon from '../common/Icon';import {ago} from '../../utils';
+export default function Topbar({title,onMenu}){const {user,theme,setTheme,unread,activity,seen,markSeen,logout,setWn}=useApp(),[bell,setBell]=useState(false),[menu,setMenu]=useState(false),[snap,setSnap]=useState(0),ref=useRef();
+useEffect(()=>{const f=e=>{if(!ref.current?.contains(e.target)){setBell(false);setMenu(false)}};document.addEventListener('mousedown',f);return()=>document.removeEventListener('mousedown',f)},[]);
+const openBell=()=>{if(!bell){setSnap(seen);markSeen()}setBell(!bell);setMenu(false)};
+return <header ref={ref}><button className="ib" id="menu" aria-label="Menu" onClick={onMenu}><Icon n="menu"/></button><div className="ttl"><small>{user.role} portal</small><h2>{title}</h2></div>
+<button className="ib" aria-label="Toggle dark mode" title="Dark / light mode" onClick={()=>setTheme(theme=='dark'?'light':'dark')}><Icon n={theme=='dark'?'sun':'moon'}/></button>
+<div className="bellw"><button className="ib" aria-label="Notifications" aria-expanded={bell} onClick={openBell}><Icon n="bell"/>{unread.length>0&&<span className="dot">{unread.length>9?'9+':unread.length}</span>}</button>
+{bell&&<div className="np"><h4>Updates</h4>{activity.slice(0,6).map(e=><a key={e.id} href="#updates" onClick={()=>setBell(false)} className={e.ts>snap&&e.actor!==user.name?'new':''}><Icon n={e.coll} size={16}/><span>{e.text}<small>{ago(e.ts)}</small></span></a>)}{!activity.length&&<p className="empty">Nothing new yet.</p>}<a href="#updates" className="all" onClick={()=>setBell(false)}>View all updates</a></div>}</div>
+<div className="bellw"><button className="who" onClick={()=>{setMenu(!menu);setBell(false)}} aria-expanded={menu}><Avatar user={user}/><span className="wn"><b>{user.name}</b><small>{user.role}</small></span></button>
+{menu&&<div className="np um"><a href="#profile" onClick={()=>setMenu(false)}><Icon n="profile" size={16}/>My profile</a><a href="#idcard" onClick={()=>setMenu(false)}><Icon n="idcard" size={16}/>My ID card</a>
+<button onClick={()=>{setWn(true);setMenu(false)}}><Icon n="spark" size={16}/>What's new</button><button onClick={logout}><Icon n="logout" size={16}/>Sign out</button></div>}</div></header>}

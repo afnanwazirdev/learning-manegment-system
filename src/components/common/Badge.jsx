@@ -1,0 +1,1 @@
+export default function Badge({value}){const v=String(value),c=/^(Paid|Present|Approved|Active|Available|Graded|Current|Excellent|Good)$/.test(v)?'good':/^(Absent|Overdue|Rejected|Inactive|F|Needs attention)$/.test(v)?'bad':'warn';return <span className={'tag '+c}>{v}</span>}

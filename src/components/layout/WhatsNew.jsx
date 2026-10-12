@@ -1,0 +1,3 @@
+import {useApp} from '../../context/AppContext';import {CHANGELOG} from '../../data/changelog';import Modal from '../common/Modal';import Icon from '../common/Icon';
+export default function WhatsNew(){const {wn,closeWn}=useApp();if(!wn)return null;
+return <Modal onClose={closeWn}><div className="modal"><h3><Icon n="spark" size={18}/> What's new · v{CHANGELOG.version}</h3><p className="mut">{CHANGELOG.date}</p><ul className="wnl">{CHANGELOG.items.map(([t,h,d])=><li key={h}><span className={'tag '+(t=='New'?'good':'warn')}>{t}</span><div><b>{h}</b><small>{d}</small></div></li>)}</ul><div className="acts"><button className="btn" onClick={closeWn}>Got it</button></div></div></Modal>}

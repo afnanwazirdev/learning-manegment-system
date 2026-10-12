@@ -1,0 +1,18 @@
+import {useState} from 'react';import {useApp} from '../context/AppContext';import {M,ACC} from '../data/config';import {ACTIONS} from '../data/actions';import {grade,csv,printIt,today} from '../utils';
+import SearchBar from '../components/common/SearchBar';import DataTable from '../components/common/DataTable';import Modal from '../components/common/Modal';import RecordForm from '../components/common/RecordForm';import DetailModal from '../components/common/DetailModal';import ReceiptModal from '../components/common/ReceiptModal';import IdCardModal from '../components/idcard/IdCardModal';import Icon from '../components/common/Icon';
+const val=(c,r)=>c=='grade'?grade(r):r[c];
+export default function ModulePage({mod}){const {rows,user,upsert,remove,say}=useApp(),[T,,C]=M[mod],w=ACC[user.role][mod]=='w',sel=C.find(c=>Array.isArray(c[2])),
+[q,setQ]=useState(''),[f,setF]=useState(''),[sort,setSort]=useState(null),[pg,setPg]=useState(0),[edit,setEdit]=useState(null),[view,setView]=useState(null),[card,setCard]=useState(null),[rec,setRec]=useState(null);
+const all=rows(mod).filter(r=>JSON.stringify(Object.values(r)).toLowerCase().includes(q.toLowerCase())&&(!f||r[sel[0]]==f));
+const sorted=sort?[...all].sort((a,b)=>{const x=val(sort.k,a),y=val(sort.k,b);return(typeof x=='number'&&typeof y=='number'?x-y:String(x).localeCompare(String(y)))*sort.d}):all;
+const PS=10,pages=Math.max(1,Math.ceil(sorted.length/PS)),cur=Math.min(pg,pages-1),list=sorted.slice(cur*PS,cur*PS+PS);
+const onSort=k=>setSort(s=>s?.k==k?(s.d>0?{k,d:-1}:null):{k,d:1});
+const run=async(a,r)=>{if(a.reply)return setEdit({prefill:{to:r.from,subject:'Re: '+r.subject}});if(a.submit){try{await upsert('submissions',{student:user.name,assignment:r.title,date:today(),score:0,status:'Submitted'});say('Assignment submitted')}catch(e){say(e.message,'error')}return}if(a.card)return setCard({r,role:a.card});if(a.receipt)return setRec(r);try{await upsert(mod,a.patch,r.id);say(a.label+' done')}catch(e){say(e.message,'error')}};
+const del=async r=>{if(!confirm('Delete this record? This cannot be undone.'))return;try{await remove(mod,r.id);say('Deleted')}catch(e){say(e.message,'error')}};
+const save=async d=>{await upsert(mod,d,edit.id);setEdit(null);say(edit.id?'Changes saved':'Record added')};
+return <><SearchBar title={T} q={q} setQ={v=>{setQ(v);setPg(0)}} filter={sel} f={f} setF={v=>{setF(v);setPg(0)}} onAdd={w&&(()=>setEdit({}))}>
+<button className="btn ghost" onClick={()=>all.length?csv(mod,C,sorted):say('Nothing to export yet.','error')}><Icon n="download" size={16}/>Export CSV</button><button className="btn ghost" onClick={()=>printIt('printing-page')}><Icon n="print" size={16}/>Print</button></SearchBar>
+<DataTable cols={C} rows={list} canEdit={w} sort={sort} onSort={onSort} actionsFor={r=>(ACTIONS[mod]||[]).filter(a=>!a.when||a.when(r,user))} onAction={run} onView={setView} onEdit={setEdit} onDelete={del}/>
+<div className="pager"><span>{sorted.length} record{sorted.length==1?'':'s'}</span><div><button className="ia" aria-label="Previous page" disabled={cur==0} onClick={()=>setPg(cur-1)}><Icon n="prev" size={15}/></button><b>Page {cur+1} of {pages}</b><button className="ia" aria-label="Next page" disabled={cur>=pages-1} onClick={()=>setPg(cur+1)}><Icon n="next" size={15}/></button></div></div>
+{edit&&<Modal onClose={()=>setEdit(null)}><RecordForm mod={mod} row={edit.id?edit:null} prefill={edit.prefill} onSave={save} onClose={()=>setEdit(null)}/></Modal>}
+{view&&<DetailModal title={T} cols={C} row={view} onClose={()=>setView(null)}/>}{rec&&<ReceiptModal row={rec} onClose={()=>setRec(null)}/>}{card&&<IdCardModal p={card.r} role={card.role} onClose={()=>setCard(null)}/>}</>}

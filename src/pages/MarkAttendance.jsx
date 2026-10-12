@@ -1,0 +1,12 @@
+import {useState} from 'react';import {useApp} from '../context/AppContext';import {today} from '../utils';import Icon from '../components/common/Icon';import Avatar from '../components/common/Avatar';
+const ST=['Present','Absent','Late'];
+export default function MarkAttendance(){const {rows,user,db,api,load,say}=useApp(),names=user.role=='admin'?(db.classes||[]).map(c=>c.name):(user.classes||'').split(',').map(s=>s.trim()).filter(Boolean),classes=[...new Set(names)];
+const [cls,setCls]=useState(classes[0]||''),[date,setDate]=useState(today()),[st,setSt]=useState({}),[busy,setBusy]=useState(false);
+const roster=rows('students').filter(s=>s.class==cls),old=Object.fromEntries((db.attendance||[]).filter(a=>a.date==date&&a.class==cls).map(a=>[a.student,a.status])),get=s=>st[s.name]||old[s.name]||'Present';
+const cnt=k=>roster.filter(s=>get(s)==k).length;
+const save=async()=>{setBusy(true);try{const r=await api('/attendance/bulk','POST',{date,class:cls,records:roster.map(s=>({student:s.name,status:get(s)}))});await load();setSt({});say(`Attendance saved for ${r.saved} students`)}catch(e){say(e.message,'error')}setBusy(false)};
+if(!classes.length)return <div className="card"><p className="empty">No class is assigned to you yet.</p></div>;
+return <><div className="bar"><select aria-label="Class" value={cls} onChange={e=>{setCls(e.target.value);setSt({})}}>{classes.map(c=><option key={c}>{c}</option>)}</select><input type="date" aria-label="Date" className="dt" max={today()} value={date} onChange={e=>{setDate(e.target.value||today());setSt({})}}/>
+<button className="btn ghost" onClick={()=>setSt(Object.fromEntries(roster.map(s=>[s.name,'Present'])))}><Icon n="check" size={16}/>Mark all present</button><button className="btn" disabled={busy||!roster.length} onClick={save}>{busy?'Saving…':'Save attendance'}</button></div>
+<div className="card"><div className="sumrow"><span className="tag good">Present {cnt('Present')}</span><span className="tag bad">Absent {cnt('Absent')}</span><span className="tag warn">Late {cnt('Late')}</span></div>
+{roster.map(s=><div className="li split" key={s.id}><div className="pp"><Avatar user={s}/><div><b>{s.name}</b><small>Roll {s.roll} · {s.idNo||''}</small></div></div><div className="seg">{ST.map(k=><button key={k} className={get(s)==k?'on '+k:''} onClick={()=>setSt({...st,[s.name]:k})}>{k}</button>)}</div></div>)}{!roster.length&&<p className="empty">No students found in class {cls}.</p>}</div></>}

@@ -1,0 +1,10 @@
+export const sum=(a,f)=>a.reduce((x,r)=>x+(+f(r)||0),0);
+export const avg=a=>a.length?Math.round(sum(a,x=>x)/a.length):0;
+export const grp=(a,k,v)=>{const o={};a.forEach(r=>(o[k(r)]??=[]).push(v(r)));return o};
+export const grade=r=>{const p=r.marks/r.total*100;return p>=80?'A':p>=65?'B':p>=50?'C':'F'};
+export const today=()=>new Date().toISOString().slice(0,10);
+export const csv=(name,cols,rows)=>{const e=v=>`"${String(v??'').replace(/"/g,'""')}"`,h=cols.map(c=>e(c[1])).join(','),b=rows.map(r=>cols.map(c=>e(c[0]=='grade'?grade(r):r[c[0]])).join(',')).join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+h+'\n'+b],{type:'text/csv'}));a.download=name+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)};
+export const printIt=cls=>{document.body.classList.add(cls);setTimeout(()=>{window.print();document.body.classList.remove(cls)},60)};
+export const ago=ts=>{const s=(Date.now()-ts)/1000;return s<60?'just now':s<3600?Math.floor(s/60)+' min ago':s<86400?Math.floor(s/3600)+' h ago':Math.floor(s/86400)+' d ago'};
+export const greet=()=>{const h=new Date().getHours();return h<12?'Good morning':h<17?'Good afternoon':'Good evening'};
+export const initials=n=>String(n||'?').split(' ').map(w=>w[0]).slice(0,2).join('');

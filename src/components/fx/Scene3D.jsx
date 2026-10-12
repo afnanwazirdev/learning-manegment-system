@@ -1,0 +1,2 @@
+export default function Scene3D({dim}){return <div className={'scene'+(dim?' dim':'')} aria-hidden="true"><i className="orb o1"/><i className="orb o2"/><i className="orb o3"/>
+{[['8%','16%',80],['82%','12%',56],['72%','66%',100]].map(([l,t,s],i)=><div key={i} className="cube" style={{left:l,top:t,'--s':s+'px','--d':26+i*9+'s'}}>{['f','b','r','l','t','u'].map(f=><i key={f} className={'face '+f}/>)}</div>)}</div>}
