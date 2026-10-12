@@ -1,27 +1,29 @@
 {
- "name": "school-lms-react",
- "private": true,
- "version": "1.0.0",
- "type": "module",
- "scripts": {
-  "dev": "concurrently -k -n api,web \"node server/index.js\" \"vite\"",
-  "server": "node server/index.js",
-  "build": "vite build",
-  "start": "node server/index.js"
- },
- "dependencies": {
-  "bcryptjs": "^3.0.3",
-  "express": "^4.22.3",
-  "gsap": "^3.15.0",
-  "jsonwebtoken": "^9.0.3",
-  "lucide-react": "^1.52.0",
-  "qrcode": "^1.5.4",
-  "react": "^18.3.1",
-  "react-dom": "^18.3.1"
- },
- "devDependencies": {
-  "@vitejs/plugin-react": "^4.3.1",
-  "concurrently": "^10.0.5",
-  "vite": "^5.4.0"
- }
+    "name": "school-lms-react",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start"
+    },
+    "dependencies": {
+        "bcryptjs": "^3.0.3",
+        "express": "^4.22.3",
+        "gsap": "^3.15.0",
+        "jsonwebtoken": "^9.0.3",
+        "lucide-react": "^1.52.0",
+        "mongodb": "^6.20.0",
+        "next": "^15.5.9",
+        "qrcode": "^1.5.4",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1"
+    },
+    "engines": {
+        "node": ">=20"
+    },
+    "overrides": {
+        "postcss": "^8.5.29"
+    }
 }

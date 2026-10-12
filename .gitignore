@@ -1,3 +1,8 @@
 node_modules
 dist
+.next
+.vercel
 server/data
+.env
+.env.local
+.env.*.local

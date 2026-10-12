@@ -1,27 +1,37 @@
-# EduNest School LMS (online website)
+# EduNest School LMS
 
-Real accounts, saved data and ID cards. React front-end + Node/Express back-end.
+EduNest is a Next.js application that serves the React frontend and its API from the same Vercel deployment. The API stores school records in MongoDB.
 
-## Run on your computer
-    npm install
-    npm run dev          # site on http://localhost:5173 (API on :4510)
+## Run locally
 
-## Run as a live website
-    npm install
-    npm run build
-    npm start            # one server serves the site and the API (PORT env, default 4510)
+1. Create a MongoDB database (MongoDB Atlas is recommended) and copy `.env.example` to `.env.local`.
+2. Set `MONGODB_URI`, `MONGODB_DB`, `JWT_SECRET`, and `INITIAL_ADMIN_CODE` in `.env.local`.
+3. Install and start the app:
 
-Deploy to Render / Railway / a VPS: build command `npm install && npm run build`, start command `npm start`.
-Data is stored in `server/data/db.json` - keep that folder on a persistent disk (or set DATA_DIR) and back it up (Admin > Settings > Download backup).
+   ```sh
+   npm install
+   npm run dev
+   ```
+
+   Next.js serves the site and `/api/*` routes on `http://localhost:3000`.
+
+## Deploy to Vercel
+
+1. Push this repository to GitHub and import it into Vercel. Use the repository root as the project root; Vercel detects Next.js automatically.
+2. Create a MongoDB Atlas database and a database user with access to that database. Configure Atlas network access to allow the Vercel deployment to connect.
+3. In Vercel Project Settings > Environment Variables, add:
+   - `MONGODB_URI`: the Atlas connection string, including the database user's credentials.
+   - `MONGODB_DB`: the database name, for example `edunest`.
+   - `JWT_SECRET`: a long, random secret used to sign login tokens.
+   - `INITIAL_ADMIN_CODE`: a private code of at least 8 characters for the first administrator account.
+4. Add the variables to the environments you will deploy (Production, and Preview if needed), then redeploy.
+
+Vercel uses `npm run build`; its Next.js runtime serves both the frontend and API. Do not deploy only the static frontend. Keep the MongoDB URI, JWT secret, and admin setup code private. After the first admin registers, later admin registrations must use that administrator's access code.
+
+The database is initialized with demo school records the first time it is used. Existing data in an old `server/data/db.json` file is not imported automatically; export and migrate it separately if you need to preserve it.
 
 ## Notes
-- Each portal (Admin / Teacher / Student) has its own register + sign-in. Passwords are hashed (bcrypt). The first admin creates an admin access code; later admin sign-ups need it.
-- Roles are enforced on the server, not just in the interface.
-- New accounts get a little sample data so dashboards are not empty. Seeded demo records (e.g. Ali Raza) can be deleted by the admin.
-- JSON-file storage suits a single school; move to a database (MongoDB/PostgreSQL) for large scale.
 
-## If registration or login does not move forward
-1. Run `npm install` again after unzipping (new packages were added), then `npm run dev`. The terminal must show both `[api] EduNest LMS server running on http://localhost:4510` and `[web] Local: http://localhost:5173`.
-2. If the page shows a red "School server is not connected" box, the API is not running. If it says the port is in use, run `PORT=4600 npm run dev` (Windows PowerShell: `$env:PORT=4600; npm run dev`).
-3. Log in from the same portal you registered in. A student account does not work in the Admin or Teacher portal; the login page now tells you which portal an account belongs to.
-4. To start completely fresh, stop the server and delete the `server/data` folder.
+- Admin, teacher, and student authorization is checked by the API.
+- Passwords and admin access codes are stored as bcrypt hashes.
+- Vercel's filesystem is ephemeral; MongoDB is the persistent store.
