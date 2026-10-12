@@ -1,2 +1,2 @@
-import {defineConfig} from 'vite';import react from '@vitejs/plugin-react';
-export default defineConfig({plugins:[react()],server:{proxy:{'/api':'http://127.0.0.1:'+(process.env.PORT||4510)},watch:{ignored:['**/server/data/**']}}});
+import { defineConfig } from 'vite'; import react from '@vitejs/plugin-react';
+export default defineConfig({ plugins: [react()], server: { proxy: { '/api': 'http://127.0.0.1:' + (process.env.PORT || 5000) }, watch: { ignored: ['**/server/data/**'] } } });
